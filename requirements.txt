@@ -1,0 +1,55 @@
+# Core dependencies
+openai
+gradio
+python-dotenv
+gunicorn
+pandas
+pypdf
+loguru
+promptic
+tenacity
+
+# MoviePy and its dependencies
+numpy
+decorator
+imageio
+imageio-ffmpeg
+tqdm
+proglog
+moviepy
+ffmpeg-python
+
+# Text processing
+nltk
+beautifulsoup4
+trafilatura
+newspaper3k
+num2words
+selectolax
+
+# Web scraping
+requests
+requests-html
+cloudscraper
+Pillow
+
+# Google Cloud Storage e APIs
+google-cloud-storage
+google-auth-oauthlib
+google-api-python-client
+google-auth-httplib2
+
+# Database
+SQLAlchemy
+psycopg2-binary
+alembic
+
+# TikTok Upload Dependencies
+tiktok-uploader
+selenium
+undetected-chromedriver
+webdriver-manager
+
+# Download Dependencies
+yt-dlp
+browser-cookie3
