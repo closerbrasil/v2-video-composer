@@ -6,6 +6,8 @@ import time
 from pathlib import Path
 from tempfile import NamedTemporaryFile
 from typing import List, Literal
+import subprocess
+import shutil
 
 import gradio as gr
 
@@ -641,14 +643,48 @@ def convert_numbers_in_text(text):
     
     return text
 
+def setup_ffmpeg_path():
+    """Configura o PATH do FFmpeg se necessário."""
+    # Verifica caminhos comuns do Homebrew no macOS
+    homebrew_paths = [
+        '/usr/local/bin',
+        '/opt/homebrew/bin',
+        '/usr/local/Cellar/ffmpeg'
+    ]
+    
+    for path in homebrew_paths:
+        if os.path.exists(path):
+            if path not in os.environ['PATH']:
+                os.environ['PATH'] = f"{path}:{os.environ['PATH']}"
+
+def check_ffmpeg():
+    """Verifica se o FFmpeg está instalado e acessível no sistema."""
+    try:
+        # Tenta configurar o PATH primeiro
+        setup_ffmpeg_path()
+        
+        # Procura o executável do FFmpeg
+        ffmpeg_path = shutil.which('ffmpeg')
+        ffprobe_path = shutil.which('ffprobe')
+        
+        if not ffmpeg_path or not ffprobe_path:
+            return False
+            
+        # Testa a execução
+        subprocess.run(['ffmpeg', '-version'], capture_output=True, check=True)
+        subprocess.run(['ffprobe', '-version'], capture_output=True, check=True)
+        return True
+    except (subprocess.CalledProcessError, FileNotFoundError):
+        return False
+
 def generate_audio(
     text_input: str,
     pdf_files: List[str] = None,
     openai_api_key: str = None,
     text_model: str = "o1-2024-12-17",
     audio_model: str = "tts-1",
-    speaker_1_voice: str = "alloy",
-    speaker_2_voice: str = "echo",
+    speaker_1_voice: str = "ash",
+    speaker_2_voice: str = "coral",
     api_base: str = None,
     intro_instructions: str = '',
     text_instructions: str = '',
@@ -659,6 +695,27 @@ def generate_audio(
     user_feedback: str = '',
     language: str = "Portuguese (Brazil)",
 ) -> tuple:
+    # Verifica se o FFmpeg está disponível
+    if not check_ffmpeg():
+        error_msg = """
+FFmpeg não encontrado ou não está funcionando corretamente. 
+
+Para resolver este problema:
+
+1. Se você está no macOS:
+   - Instale o FFmpeg usando Homebrew: brew install ffmpeg
+   - Ou reinstale se já estiver instalado: brew reinstall ffmpeg
+
+2. Verifique se o FFmpeg está no PATH do sistema:
+   - O executável deve estar em /usr/local/bin/ffmpeg
+   - Ou em /opt/homebrew/bin/ffmpeg
+
+3. Se o problema persistir:
+   - Tente reiniciar o terminal
+   - Verifique as permissões dos arquivos: chmod +x /usr/local/bin/ffmpeg /usr/local/bin/ffprobe
+"""
+        raise gr.Error(error_msg)
+
     # Use API key from .env instead of validating user input
     api_key = os.getenv("OPENAI_API_KEY")
     if not api_key:

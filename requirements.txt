@@ -53,3 +53,4 @@ webdriver-manager
 # Download Dependencies
 yt-dlp
 browser-cookie3
+requests_html

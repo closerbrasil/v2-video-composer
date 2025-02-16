@@ -28,7 +28,7 @@ def main():
     print("\nGerando podcast...")
     try:
         # Configurações para geração do podcast
-        audio_file, transcript, original_text, error = generate_audio(
+        audio_file, transcript, combined_text = generate_audio(
             text_input=text_input,
             pdf_files=None,
             openai_api_key=os.getenv("OPENAI_API_KEY"),
@@ -46,10 +46,6 @@ def main():
             user_feedback="",
             language="Portuguese (Brazil)"
         )
-        
-        if error:
-            print(f"\n❌ Erro ao gerar o podcast: {error}")
-            return
             
         print("\n✅ Podcast gerado com sucesso!")
         print(f"\nArquivo de áudio salvo em: {audio_file}")
